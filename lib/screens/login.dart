@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../controllers/auth_controller.dart'; // Import your controller
+import '../controllers/auth_controller.dart';
+import '../screens/dashboard.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -31,6 +32,13 @@ class _LoginScreenState extends State<LoginScreen> {
             backgroundColor: Colors.green,
           ),
         );
+        // Navigate to Dashboard and pass the user data
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DashboardScreen(student: _authController.user!),
+      ),
+    );
       } else {
         // Failure Snackbar
         ScaffoldMessenger.of(context).showSnackBar(

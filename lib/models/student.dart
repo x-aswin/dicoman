@@ -25,7 +25,7 @@ class Student {
       regNo: json['reg_no'] ?? '',
       batchId: int.parse(json['batch_id'].toString()),
       currentSem: int.parse(json['cur_sem'].toString()),
-      profileImageUrl: "https://dicoman.dist.ac.in/dicoman/std/${json['std_id']}.jpg",
+      profileImageUrl: "https://cdn-icons-png.flaticon.com/512/219/219970.png",
     );
   } catch (e) {
     print("Error parsing Student JSON: $e");
