@@ -7,21 +7,29 @@ class ApiService {
   final String baseUrl = "https://dicoman.dist.ac.in/api";
 
   Future<Student?> login(String regNo, String password) async {
-    //fake delay
+    //Keep the fake delay to simulate network latency
     await Future.delayed(const Duration(seconds: 2));
 
-    // final response = await http.post(Uri.parse('$baseUrl/login'), ...);
-    
+    //Hardcoded JSON response (matches the DiST API format)
+    const String mockJsonResponse = '''
+{
+  "std_id": 3452,
+  "std_name": "Arun Das",
+  "reg_no": "IMCA22089",
+  "batch_id": 208,
+  "cur_sem": 7
+}
+''';
+
+    //Check credentials and parse JSON
     if (regNo == "user" && password == "pass") {
-      return Student(
-        stdId: 3452,
-        name: "Arun Das",
-        regNo: "IMCA22089",
-        batchId: 208,
-        currentSem: 7,
-        profileImageUrl: "https://thumbs.dreamstime.com/b/young-man-smiling-cartoon-profile-abstract-over-square-frame-background-vector-illustration-graphic-design-143189662.jpg",
-      );
+      // Convert the string into a Map<String, dynamic>
+      final Map<String, dynamic> data = jsonDecode(mockJsonResponse);
+      
+      // Use your model's factory to create the object
+      return Student.fromJson(data);
     }
+    
     return null;
   }
 }

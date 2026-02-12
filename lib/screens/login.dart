@@ -80,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 24),
 
-            // 3. The Button wrapped in a ListenableBuilder
+            //The Button wrapped in a ListenableBuilder
             ListenableBuilder(
               listenable: _authController,
               builder: (context, child) {

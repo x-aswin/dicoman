@@ -17,13 +17,19 @@ class Student {
 
   // A helper to create a Student object from JSON data
   factory Student.fromJson(Map<String, dynamic> json) {
+  try {
     return Student(
-      stdId: json['std_id'] ?? 0,
+      // int.parse ensures it works even if the JSON is "3452"
+      stdId: int.parse(json['std_id'].toString()), 
       name: json['std_name'] ?? 'Unknown',
       regNo: json['reg_no'] ?? '',
-      batchId: json['batch_id'] ?? 0,
-      currentSem: json['cur_sem'] ?? 1,
+      batchId: int.parse(json['batch_id'].toString()),
+      currentSem: int.parse(json['cur_sem'].toString()),
       profileImageUrl: "https://dicoman.dist.ac.in/dicoman/std/${json['std_id']}.jpg",
     );
+  } catch (e) {
+    print("Error parsing Student JSON: $e");
+    rethrow;
   }
+}
 }
