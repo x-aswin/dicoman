@@ -1,3 +1,4 @@
+import 'package:dicoman/screens/login.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,10 +14,11 @@ class DicomanApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Dicoman DiST',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue.shade900),
+        colorSchemeSeed: const Color(0xFF007BFF),
+        brightness: Brightness.dark,
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: LoginScreen(),
     );
   }
 }
