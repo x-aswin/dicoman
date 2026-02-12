@@ -13,11 +13,21 @@ class DicomanApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Dicoman DiST',
-      theme: ThemeData(
-        colorSchemeSeed: const Color(0xFF007BFF),
-        brightness: Brightness.dark,
-        useMaterial3: true,
-      ),
+  theme: ThemeData(
+    useMaterial3: true,
+    colorSchemeSeed: Colors.blueAccent,
+    brightness: Brightness.light,
+  ),
+
+  darkTheme: ThemeData(
+    useMaterial3: true,
+    colorSchemeSeed: Colors.blueAccent,
+    brightness: Brightness.dark,
+  ),
+
+  themeMode: ThemeMode.system,
+
+
       home: LoginScreen(),
     );
   }
