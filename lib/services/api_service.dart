@@ -1,4 +1,5 @@
 // lib/services/api_service.dart
+import '../models/attendance.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/student.dart';
@@ -55,4 +56,55 @@ class ApiService {
 
 
 
+}
+
+class AttendanceService {
+  // 1. Fetch Semester List for the dropdown
+  Future<List<Semester>> fetchSemesters() async {
+    // Simulate server delay
+    await Future.delayed(const Duration(milliseconds: 600));
+
+    // This represents the JSON response from your API
+    final List<Map<String, dynamic>> mockSemJson = [
+      {"id": 1, "name": "Semester 1"},
+      {"id": 2, "name": "Semester 2"},
+      {"id": 6, "name": "Semester 6"},
+      {"id": 7, "name": "Semester 7"},
+    ];
+
+    return mockSemJson.map((json) => Semester.fromJson(json)).toList();
+  }
+
+  // 2. Fetch Attendance based on the selected Semester ID
+  Future<List<AttendanceRecord>> fetchAttendance(int semId) async {
+    // Simulate server delay
+    await Future.delayed(const Duration(seconds: 1));
+
+    // This mimics the structured data extracted from the DiCoMan snapshot
+    final List<Map<String, dynamic>> mockAttendanceJson = [
+      {
+        "date": "2025-10-06",
+        "status": "P",
+        "periods": {
+          "I": {"subject": "CRY", "staff": "ANJALI MENON K R", "status": 0},
+          "II": {"subject": "ADA", "staff": "JACOB THALIYAN", "status": 0},
+          "III": {"subject": "DMW", "staff": "VIDHYA V", "status": 0},
+          "IV": {"subject": "CN", "staff": "AMAL DEV K", "status": 0},
+          "V": {"subject": "REV", "staff": "ANDRIYA TINA", "status": 0},
+          "VI": {"subject": "REV", "staff": "ANDRIYA TINA", "status": 0},
+        }
+      },
+      {
+        "date": "2025-10-07",
+        "status": "A",
+        "periods": {
+          "I": {"subject": "REV", "staff": "ANDRIYA TINA", "status": 1},
+          "II": {"subject": "REV", "staff": "ANDRIYA TINA", "status": 1},
+          "III": {"subject": "REV", "staff": "ANDRIYA TINA", "status": 1},
+        }
+      }
+    ];
+
+    return mockAttendanceJson.map((json) => AttendanceRecord.fromJson(json)).toList();
+  }
 }
