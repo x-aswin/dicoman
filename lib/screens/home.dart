@@ -93,6 +93,10 @@ bottomNavigationBar: SafeArea(
   Widget _navItem(IconData icon, String label, int index) {
   bool isSelected = _currentIndex == index;
 
+  final Color selectedColor = Theme.of(context).colorScheme.primary; // Or .secondary
+  final Color unselectedColor = Theme.of(context).colorScheme.onSurfaceVariant;
+  final Color highlightColor = Theme.of(context).colorScheme.primaryContainer.withOpacity(0.4);
+
   return Expanded(
     child: GestureDetector(
       onTap: () => _onTabTapped(index),
@@ -102,9 +106,7 @@ bottomNavigationBar: SafeArea(
         // Vertical padding here creates the "pill" height
         padding: const EdgeInsets.symmetric(vertical: 10), 
         decoration: BoxDecoration(
-          color: isSelected
-              ? Theme.of(context).colorScheme.secondary.withOpacity(0.15)
-              : Colors.transparent,
+          color: isSelected ? highlightColor : Colors.transparent,
           // Use 100 to perfectly match the outer bar's roundness
           borderRadius: BorderRadius.circular(100), 
         ),
@@ -113,7 +115,7 @@ bottomNavigationBar: SafeArea(
           children: [
             Icon(
               icon,
-              color: isSelected ? Colors.green : Colors.grey,
+              color: isSelected ? selectedColor : unselectedColor,
               size: 22,
             ),
             if(true) //if (isSelected) Optional: Only show text for selected item to save space
@@ -122,7 +124,7 @@ bottomNavigationBar: SafeArea(
                 child: Text(
                   label,
                   style: TextStyle(
-                    color: Colors.green,
+                    color: isSelected ? selectedColor : unselectedColor,
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                   ),
