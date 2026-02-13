@@ -108,12 +108,24 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 title: Text(sem.name, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w500)),
                 selected: _controller.selectedSemester == sem,
                 selectedTileColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                onTap: () {
-                  _controller.updateSemester(sem);
-                  _controller.fetchAttendanceForSelected();
-                  Navigator.pop(context);
-                  setState(() {});
-                },
+                onTap: () async {
+  //Update the selected semester in the controller
+  _controller.updateSemester(sem);
+  
+  //Close the bottom sheet immediately
+  Navigator.pop(context);
+  
+  //Trigger a rebuild to show the loading spinner
+  setState(() {}); 
+
+  //AWAIT the actual data fetching
+  await _controller.fetchAttendanceForSelected();
+  
+  //Trigger another rebuild to hide the spinner and show the data
+  if (mounted) {
+    setState(() {});
+  }
+},
               )),
             ],
           ),

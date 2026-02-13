@@ -1,6 +1,5 @@
 import '../services/api_service.dart';
 import '../models/profile.dart';
-
 class ProfileController {
   final ProfileService _service = ProfileService();
 
@@ -12,7 +11,7 @@ class ProfileController {
 
     profile = await _service.fetchProfileDetailsserv(studentId);
 
-    print("Inside controller after fetch: $profile");
+    //print("Inside controller after fetch: $profile");
 
     isLoading = false;
   }

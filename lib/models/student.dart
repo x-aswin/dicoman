@@ -1,3 +1,4 @@
+// ignore: unused_import
 import 'package:dicoman/controllers/profile_controller.dart';
 class Student {
   final int stdId;

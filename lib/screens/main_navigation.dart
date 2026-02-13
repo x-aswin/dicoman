@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/student.dart';
 import '../models/profile.dart';
+// ignore: unused_import
 import '../controllers/profile_controller.dart';
 import '../controllers/notification.dart';
 
@@ -8,6 +9,9 @@ import 'dashboard.dart';
 import 'attendance.dart';
 import 'marklist.dart';
 import 'profile.dart';
+//import '../controllers/profile_controller.dart';
+// ignore: duplicate_import
+import '../controllers/notification.dart';
 
 class MainNavigation extends StatefulWidget {
   final Student student;
@@ -23,6 +27,7 @@ class _MainNavigationState extends State<MainNavigation> {
   late List<Widget> _pages;
   late Student currentStudent;
 
+  // ignore: unused_field
   ProfileDetails? _profile;   // ✅ Store profile separately
 
   @override
@@ -53,10 +58,12 @@ class _MainNavigationState extends State<MainNavigation> {
     _currentIndex = index;
   });
 }
-
+  // ignore: unused_element
   void _jumpToTab(int index) {
-    _onTabTapped(index);
-  }
+ _onTabTapped(index); // This reuses existing logic
+}
+
+
 
   @override
   Widget build(BuildContext context) {

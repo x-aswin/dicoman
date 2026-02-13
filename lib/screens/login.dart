@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../controllers/auth_controller.dart';
-import '../screens/dashboard.dart';
+//import '../screens/dashboard.dart';
 import 'main_navigation.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -19,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   //The function to trigger login
   void _handleLogin() async {
+    FocusScope.of(context).unfocus();
     final success = await _authController.login(
       _usernameController.text,
       _passwordController.text,
