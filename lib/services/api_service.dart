@@ -1,9 +1,12 @@
 // lib/services/api_service.dart
+
 import '../models/attendance.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/student.dart';
 import '../models/notification.dart';
+import '../models/profile.dart';
+import '../models/mark.dart';
 
 class ApiService {
   final String baseUrl = "https://dicoman.dist.ac.in/api";
@@ -107,4 +110,98 @@ class AttendanceService {
 
     return mockAttendanceJson.map((json) => AttendanceRecord.fromJson(json)).toList();
   }
+}
+
+class ProfileService {
+  Future<ProfileDetails> fetchProfileDetailsserv(int userId) async {
+    await Future.delayed(const Duration(seconds: 1));
+
+    final Map<String, dynamic> mockProfileJson = {
+      "basic": {
+        "fullName": "SOORAJ S KUMAR",
+        "admissionNo": "IMCA22016",
+        "batch": "MCA (Integrated) 2022 - 2027",
+        "semester": "7",
+        "quota": "MANAGEMENT",
+        "gender": "Male",
+        "dob": "27 December 2002",
+        "religion": "Hindu",
+        "caste": "Nair",
+        "nationality": "Indian",
+        "place": "Thiruvalla",
+        "imageUrl": ""
+      },
+      "parent": {
+        "fatherName": "S Suresh Kumar",
+        "fatherOccupation": "Business",
+        "fatherEmail": "sureshpurayattu@gmail.com",
+        "fatherMobile": "9656403003",
+        "motherName": "Beenamol K P",
+        "motherOccupation": "Housewife",
+        "motherEmail": "beenakumari5656@gmail.com",
+        "motherMobile": "9562285656"
+      },
+      "contact": {
+        "permanentAddress":
+            "Purayattu, Kavumbhagom, Thiruvalla, Pathanamthitta, Kerala - 689102",
+        "communicationAddress": "NA",
+        "email1": "sooraj2002@depaul.edu.in",
+        "email2": "soorajpurayattu0469@gmail.com",
+        "mobile": "7736989863"
+      }
+    };
+
+    return ProfileDetails.fromJson(mockProfileJson);
+  }
+}
+class MarkService {
+  // 🔹 Fetch Internals (IA1, IA2)
+Future<List<String>> fetchExams() async {
+  await Future.delayed(const Duration(milliseconds: 500));
+
+  return ["IA1", "IA2"];
+}
+
+// 🔹 Fetch Marks
+Future<List<SubjectMark>> fetchMarks(
+    int studentId, String semester, String exam) async {
+  await Future.delayed(const Duration(seconds: 1));
+
+  int base = exam == "IA1" ? 24 : 30;
+
+  final List<Map<String, dynamic>> mockJson = [
+    {
+      "subjectName": "Analysis & Design of Algorithms",
+      "maxMark": 40,
+      "passMark": 20,
+      "mark": base,
+    },
+    {
+      "subjectName": "Computer Networks",
+      "maxMark": 40,
+      "passMark": 20,
+      "mark": base + 3,
+    },
+    {
+      "subjectName": "Cryptography",
+      "maxMark": 40,
+      "passMark": 20,
+      "mark": base + 5,
+    },
+    {
+      "subjectName": "Data Mining",
+      "maxMark": 40,
+      "passMark": 20,
+      "mark": base + 2,
+    },
+    {
+      "subjectName": "Linux OS",
+      "maxMark": 40,
+      "passMark": 20,
+      "mark": base + 4,
+    },
+  ];
+
+  return mockJson.map((e) => SubjectMark.fromJson(e)).toList();
+}
 }

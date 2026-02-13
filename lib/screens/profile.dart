@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/student.dart';
+import '../models/profile.dart';
+import '../controllers/profile_controller.dart';
 
 class ProfileScreen extends StatefulWidget {
   final Student student;
@@ -14,15 +16,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
   int selectedTab = 0;
   final List<String> tabs = ["Basic", "Parents", "Contact", "Education"];
 
+  final ProfileController _controller = ProfileController();
+  ProfileDetails? profile;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      await _controller.fetchProfile(widget.student.stdId);
+      setState(() {
+        profile = _controller.profile;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        profile = null;
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
+    // 🔄 Loading State
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // ❌ Error / Null State
+    if (profile == null) {
+      return const Scaffold(
+        body: Center(child: Text("Failed to load profile")),
+      );
+    }
+
+    // ✅ Safe to use profile!
+    final basic = profile!.basic;
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
       body: CustomScrollView(
         slivers: [
-          // 🔹 M3 Styled Sliver App Bar
           SliverAppBar(
             expandedHeight: 280,
             pinned: true,
@@ -44,12 +87,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       backgroundColor: colorScheme.primary,
                       child: CircleAvatar(
                         radius: 47,
-                        backgroundImage: NetworkImage(widget.student.profileImageUrl),
+                        backgroundImage: NetworkImage(
+                          basic.imageUrl.isNotEmpty
+                              ? basic.imageUrl
+                              : widget.student.profileImageUrl,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      widget.student.name,
+                      basic.fullName,
                       style: TextStyle(
                         color: colorScheme.onPrimaryContainer,
                         fontSize: 22,
@@ -59,15 +106,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Text(
                       widget.student.regNo,
                       style: TextStyle(
-                        color: colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+                        color: colorScheme.onPrimaryContainer.withOpacity(0.7),
                         fontSize: 14,
                       ),
                     ),
                     const SizedBox(height: 12),
                     Badge(
                       label: Text("Semester ${widget.student.currentSem}"),
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      largeSize: 24,
                       backgroundColor: colorScheme.primary,
                       textColor: colorScheme.onPrimary,
                     ),
@@ -77,32 +122,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
 
-          // 🔹 M3 Segmented Tabs
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: SegmentedButton<int>(
-                  segments: List.generate(tabs.length, (index) {
-                    return ButtonSegment<int>(
-                      value: index,
-                      label: Text(tabs[index]),
-                    );
-                  }),
-                  selected: {selectedTab},
-                  onSelectionChanged: (newSelection) {
-                    setState(() {
-                      selectedTab = newSelection.first;
-                    });
-                  },
-                  showSelectedIcon: false,
-                ),
+              child: SegmentedButton<int>(
+                segments: List.generate(tabs.length, (index) {
+                  return ButtonSegment<int>(
+                    value: index,
+                    label: Text(tabs[index]),
+                  );
+                }),
+                selected: {selectedTab},
+                onSelectionChanged: (newSelection) {
+                  setState(() {
+                    selectedTab = newSelection.first;
+                  });
+                },
+                showSelectedIcon: false,
               ),
             ),
           ),
 
-          // 🔹 Content Section
           SliverPadding(
             padding: const EdgeInsets.all(16),
             sliver: SliverToBoxAdapter(
@@ -111,7 +151,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: colorScheme.surfaceContainerLow,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24),
-                  side: BorderSide(color: colorScheme.outlineVariant.withValues(alpha: 0.5)),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -130,68 +169,66 @@ class _ProfileScreenState extends State<ProfileScreen> {
       case 0:
         return _basicInfo();
       case 1:
-        return _placeholderInfo("Parents Info", Icons.family_restroom);
+        return _parentInfo();
       case 2:
-        return _placeholderInfo("Contact Info", Icons.contact_phone);
-      case 3:
-        return _placeholderInfo("Education Info", Icons.history_edu);
+        return _contactInfo();
       default:
         return const SizedBox();
     }
   }
 
   Widget _basicInfo() {
+    final basic = profile!.basic;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Basic Details",
-          style: TextStyle(
-            fontSize: 18, 
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        ),
-        const SizedBox(height: 16),
-        _infoTile(Icons.person_outline, "Full Name", widget.student.name),
-        _infoTile(Icons.badge_outlined, "Registration Number", widget.student.regNo),
-        _infoTile(Icons.groups_outlined, "Batch Reference", widget.student.batchId.toString()),
-        _infoTile(Icons.school_outlined, "Academic Stage", "Semester ${widget.student.currentSem}"),
+        _infoTile(Icons.person_outline, "Full Name", basic.fullName),
+        _infoTile(Icons.badge_outlined, "Admission No", basic.admissionNo),
+        _infoTile(Icons.school_outlined, "Batch", basic.batch),
+        _infoTile(Icons.class_, "Semester", basic.semester),
+        _infoTile(Icons.flag_outlined, "Nationality", basic.nationality),
+      ],
+    );
+  }
+
+  Widget _parentInfo() {
+    final parent = profile!.parent;
+
+    return Column(
+      children: [
+        _infoTile(Icons.man, "Father", parent.fatherName),
+        _infoTile(Icons.work_outline, "Occupation", parent.fatherOccupation),
+        const Divider(),
+        _infoTile(Icons.woman, "Mother", parent.motherName),
+        _infoTile(Icons.work_outline, "Occupation", parent.motherOccupation),
+      ],
+    );
+  }
+
+  Widget _contactInfo() {
+    final contact = profile!.contact;
+
+    return Column(
+      children: [
+        _infoTile(Icons.email_outlined, "Email 1", contact.email1),
+        _infoTile(Icons.phone_outlined, "Mobile", contact.mobile),
+        _infoTile(Icons.home_outlined, "Address", contact.permanentAddress),
       ],
     );
   }
 
   Widget _infoTile(IconData icon, String label, String value) {
     final colorScheme = Theme.of(context).colorScheme;
+
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: colorScheme.primary.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, color: colorScheme.primary, size: 20),
-      ),
-      title: Text(
-        label,
-        style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant),
-      ),
+      leading: Icon(icon, color: colorScheme.primary),
+      title: Text(label),
       subtitle: Text(
         value,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        style: const TextStyle(fontWeight: FontWeight.w600),
       ),
-    );
-  }
-
-  Widget _placeholderInfo(String title, IconData icon) {
-    return Column(
-      children: [
-        Icon(icon, size: 48, color: Theme.of(context).colorScheme.outline),
-        const SizedBox(height: 12),
-        Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        const Text("Information will be fetched from DiCoMan servers."),
-      ],
     );
   }
 }

@@ -1,20 +1,19 @@
-import 'package:flutter/material.dart';
 import '../services/api_service.dart';
-import '../models/student.dart';
+import '../models/profile.dart';
 
-class profileController extends ChangeNotifier {
-  Future<Student> fetchStudentProfile(int studentId) async {
-    // 🔹 Simulate API call (replace with real API later)
-    await Future.delayed(const Duration(seconds: 1));
+class ProfileController {
+  final ProfileService _service = ProfileService();
 
-    // Example response (mock data)
-    return Student(
-      stdId: studentId,
-      name: "Sooraj S Kumar",
-      regNo: "IMCA22016",
-      batchId: 2022,
-      currentSem: 7,
-      profileImageUrl: "https://cdn-icons-png.flaticon.com/512/219/219970.png",
-    );
+  ProfileDetails? profile;
+  bool isLoading = false;
+
+  Future<void> fetchProfile(int studentId) async {
+    isLoading = true;
+
+    profile = await _service.fetchProfileDetailsserv(studentId);
+
+    print("Inside controller after fetch: $profile");
+
+    isLoading = false;
   }
 }

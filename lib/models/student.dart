@@ -1,3 +1,4 @@
+import 'package:dicoman/controllers/profile_controller.dart';
 class Student {
   final int stdId;
   final String name;
@@ -5,7 +6,7 @@ class Student {
   final int batchId;
   final int currentSem;
   final String profileImageUrl;
-
+  
   Student({
     required this.stdId,
     required this.name,
@@ -13,6 +14,7 @@ class Student {
     required this.batchId,
     required this.currentSem,
     required this.profileImageUrl,
+    
   });
 
   // A helper to create a Student object from JSON data
@@ -26,6 +28,7 @@ class Student {
       batchId: int.parse(json['batch_id'].toString()),
       currentSem: int.parse(json['cur_sem'].toString()),
       profileImageUrl: "https://cdn-icons-png.flaticon.com/512/219/219970.png",
+
     );
   } catch (e) {
     print("Error parsing Student JSON: $e");
