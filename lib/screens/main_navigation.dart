@@ -5,7 +5,7 @@ import 'dashboard.dart';
 import 'attendance.dart';
 import 'marklist.dart';
 import 'profile.dart';
-import '../controllers/profile_controller.dart';
+//import '../controllers/profile_controller.dart';
 import '../controllers/notification.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -59,9 +59,9 @@ Future<void> _onTabTapped(int index) async {
     });
   }
 }
-  void _jumpToTab(int index) {
-  _onTabTapped(index); // This reuses existing logic
-}
+ // void _jumpToTab(int index) {
+ // _onTabTapped(index); // This reuses existing logic
+//}
 
 
 

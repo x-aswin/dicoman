@@ -9,7 +9,7 @@ class MarklistScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // We get the screen size to calculate percentages
-    final size = MediaQuery.of(context).size;
+    //final size = MediaQuery.of(context).size;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
