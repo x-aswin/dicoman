@@ -6,8 +6,13 @@ import '../controllers/notification.dart';
 
 class DashboardScreen extends StatefulWidget {
   final Student student;
+  final Function(int) onMenuTap;
 
-  const DashboardScreen({super.key, required this.student});
+  const DashboardScreen({
+    super.key, 
+    required this.student, 
+    required this.onMenuTap, 
+  });
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -27,6 +32,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (mounted) setState(() {});
   }
 
+  // --- POPUP HELPER ---
+  void _showUnavailablePop(BuildContext context, String title) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text("$title Not Available"),
+        content: Text("The $title feature is currently under development. Please check back later!"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
+
   String get greeting {
     final hour = DateTime.now().hour;
     if (hour < 12) return 'Good Morning';
@@ -44,7 +67,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       backgroundColor: colorScheme.surface,
       body: Stack(
         children: [
-          // Header Background
           Container(
             height: size.height * 0.35,
             width: double.infinity,
@@ -52,12 +74,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               gradient: LinearGradient(
                 colors: isDarkMode 
                   ? [
-                      // Your "Perfect" Dark Mode Colors
                       Color.alphaBlend(Colors.black.withValues(alpha: 0.8), colorScheme.primary),
                       colorScheme.scrim,
                     ]
                   : [
-                      // Your "Perfect" Light Mode Colors
                       colorScheme.primary,
                       colorScheme.primary.withValues(alpha: 0.7),
                     ],
@@ -71,14 +91,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
           
-          // Background School Watermark
           Positioned(
             top: -50,
             right: -50,
             child: Icon(
               Icons.school_outlined,
               size: 250, 
-              // Always use a light opacity version of white for the watermark on the dark/colored header
               color: Colors.white.withValues(alpha: 0.1),
             ),
           ),
@@ -87,13 +105,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: Column(
               children: [
                 SizedBox(height: size.height * 0.05),
-                
-                // Student Profile Header
                 _buildHeader(colorScheme),
-
                 const SizedBox(height: 40),
-
-                // White/Surface Content Sheet
                 Expanded(
                   child: Container(
                     width: double.infinity,
@@ -107,7 +120,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     child: Column(
                       children: [
-                        // Drag Handle
                         Container(
                           width: 40,
                           height: 4,
@@ -117,7 +129,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
-
                         const Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
@@ -126,11 +137,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                         ),
                         const SizedBox(height: 16),
-
                         _buildNotificationSection(colorScheme),
-
                         const SizedBox(height: 24),
-
                         _buildMenuGrid(context),
                       ],
                     ),
@@ -171,7 +179,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   greeting,
                   style: TextStyle(
                     fontSize: 16,
-                    // Force white for header text to keep the "Midnight" pop
                     color: Colors.white.withValues(alpha: 0.8),
                     letterSpacing: 1.1
                   ),
@@ -198,11 +205,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (_notifController.isLoading && _notifController.notifications.isEmpty) {
       return const SizedBox(height: 250, child: Center(child: CircularProgressIndicator()));
     }
-
     if (_notifController.notifications.isEmpty) {
       return const SizedBox(height: 100, child: Center(child: Text("No new updates")));
     }
-
     return SizedBox(
       height: 250,
       child: ListView.builder(
@@ -259,84 +264,95 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildMenuGrid(BuildContext context) {
     return Expanded(
       child: GridView.count(
-        padding: const EdgeInsets.only(bottom: 20),
+        padding: const EdgeInsets.only(bottom: 100),
         crossAxisCount: 2,
         crossAxisSpacing: 16,
         mainAxisSpacing: 16,
         childAspectRatio: 1.1, 
         children: [
-          _buildMenuCard(context, Icons.calendar_today_rounded, "Timetable", Colors.blueAccent),
-          _buildMenuCard(context, Icons.analytics_rounded, "Marks", Colors.orangeAccent),
-          _buildMenuCard(context, Icons.assignment_turned_in_rounded, "Attendance", Colors.deepPurpleAccent),
-          _buildMenuCard(context, Icons.campaign_rounded, "Notices", Colors.redAccent),
+          _buildMenuCard(context, Icons.calendar_today_rounded, "Timetable", Colors.blueAccent, () {
+            _showUnavailablePop(context, "Timetable");
+          }),
+          _buildMenuCard(context, Icons.analytics_rounded, "Marks", Colors.orangeAccent, () {
+            widget.onMenuTap(2);
+          }),
+          _buildMenuCard(context, Icons.assignment_turned_in_rounded, "Attendance", Colors.deepPurpleAccent, () {
+            widget.onMenuTap(1); 
+          }),
+          _buildMenuCard(context, Icons.campaign_rounded, "Notices", Colors.redAccent, () {
+            _showUnavailablePop(context, "Notices");
+          }),
         ],
       ),
     );
   }
 
-  Widget _buildMenuCard(BuildContext context, IconData icon, String title, Color color) {
+  Widget _buildMenuCard(BuildContext context, IconData icon, String title, Color color, VoidCallback onTap) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: colorScheme.outlineVariant.withValues(alpha: 0.3), width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.08), 
-            blurRadius: 12, 
-            offset: const Offset(0, 4)
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: Stack(
-          children: [
-            Positioned(
-              right: -10,
-              top: -10,
-              child: CircleAvatar(radius: 30, backgroundColor: color.withValues(alpha: 0.04)),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.12), 
-                      borderRadius: BorderRadius.circular(15)
-                    ),
-                    child: Icon(icon, color: color, size: 24),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 15, 
-                          fontWeight: FontWeight.bold, 
-                          color: colorScheme.onSurface, 
-                          letterSpacing: -0.5
-                        ),
-                      ),
-                      Text(
-                        "View details",
-                        style: TextStyle(
-                          fontSize: 11, 
-                          color: colorScheme.onSurfaceVariant
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: colorScheme.outlineVariant.withValues(alpha: 0.3), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.08), 
+              blurRadius: 12, 
+              offset: const Offset(0, 4)
             ),
           ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: Stack(
+            children: [
+              Positioned(
+                right: -10,
+                top: -10,
+                child: CircleAvatar(radius: 30, backgroundColor: color.withValues(alpha: 0.04)),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: 0.12), 
+                        borderRadius: BorderRadius.circular(15)
+                      ),
+                      child: Icon(icon, color: color, size: 24),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 15, 
+                            fontWeight: FontWeight.bold, 
+                            color: colorScheme.onSurface, 
+                            letterSpacing: -0.5
+                          ),
+                        ),
+                        Text(
+                          "View details",
+                          style: TextStyle(
+                            fontSize: 11, 
+                            color: colorScheme.onSurfaceVariant
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,6 +1,6 @@
 import 'package:dicoman/screens/login.dart';
 import 'package:flutter/material.dart';
-import 'screens/home.dart';
+import 'screens/main_navigation.dart';
 void main() {
   runApp(const DicomanApp());
 }

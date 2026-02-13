@@ -22,37 +22,48 @@ class _MainNavigationState extends State<MainNavigation> {
   late Student currentStudent;
 
   @override
-  void initState() {
-    super.initState();
-    NotificationController().fetchAllNotifications();
-    currentStudent = widget.student;
+@override
+void initState() {
+  super.initState();
+  NotificationController().fetchAllNotifications();
+  currentStudent = widget.student;
 
-    _pages = [
-      DashboardScreen(student: currentStudent),
-      AttendanceScreen(student: currentStudent),
-      MarklistScreen(student: currentStudent),
-      ProfileScreen(student: currentStudent),
-    ];
+  // IMPORTANT: Define the pages here
+  _pages = [
+    DashboardScreen(
+      student: currentStudent, 
+      onMenuTap: (index) => _onTabTapped(index), 
+    ),
+    AttendanceScreen(student: currentStudent),
+    MarklistScreen(student: currentStudent),
+    ProfileScreen(student: currentStudent),
+  ];
+}
+
+// In your _onTabTapped, we need to make sure the pages stay in sync 
+// if the student data changes (like for the Profile)
+Future<void> _onTabTapped(int index) async {
+  if (index == 3) {
+    final controller = profileController();
+    final updatedStudent = await controller.fetchStudentProfile(currentStudent.stdId);
+
+    setState(() {
+      currentStudent = updatedStudent;
+      // Re-initialize the specific page with updated data
+      _pages[3] = ProfileScreen(student: currentStudent);
+      _currentIndex = index;
+    });
+  } else {
+    setState(() {
+      _currentIndex = index;
+    });
   }
+}
+  void _jumpToTab(int index) {
+  _onTabTapped(index); // This reuses existing logic
+}
 
-  Future<void> _onTabTapped(int index) async {
-    if (index == 3) {
-      // ✅ Profile tab clicked → call controller
-      final controller = profileController();
-      final updatedStudent =
-          await controller.fetchStudentProfile(currentStudent.stdId);
 
-      setState(() {
-        currentStudent = updatedStudent;
-        _pages[3] = ProfileScreen(student: currentStudent);
-        _currentIndex = index;
-      });
-    } else {
-      setState(() {
-        _currentIndex = index;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
