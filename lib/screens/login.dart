@@ -27,10 +27,24 @@ class _LoginScreenState extends State<LoginScreen> {
     if (mounted) { // Check if the screen is still visible
       if (success) {
         // Success Snackbar
+        final colorScheme = Theme.of(context).colorScheme;
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Welcome back, ${_authController.user?.name}!"),
-            backgroundColor: Colors.green,
+            content: Text("Welcome back, ${_authController.user?.name}!",
+            style: TextStyle(
+            // Use 'onPrimary' to ensure text is readable against the background
+            color: colorScheme.onPrimary,
+            fontWeight: FontWeight.w600,
+            ),
+            ),
+            // 2. Use 'primary' instead of a hardcoded Colors.green
+        backgroundColor: colorScheme.primary,
+        behavior: SnackBarBehavior.floating, // Makes it look more modern
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        margin: const EdgeInsets.all(16), // Gives it that "floating pill" look
           ),
         );
         // Navigate to Dashboard and pass the user data
@@ -41,14 +55,29 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
       } else {
-        // Failure Snackbar
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Invalid registration number or password"),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+  // Failure Snackbar
+  final colorScheme = Theme.of(context).colorScheme;
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        "Invalid registration number or password",
+        style: TextStyle(
+          // Use 'onError' to ensure text is readable against the red/dark background
+          color: colorScheme.onError,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      // Use the theme's official error color instead of hardcoded Colors.red
+      backgroundColor: colorScheme.error,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      margin: const EdgeInsets.all(16),
+    ),
+  );
+}
     }
   }
 
