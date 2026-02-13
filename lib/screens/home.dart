@@ -59,72 +59,79 @@ class _MainNavigationState extends State<MainNavigation> {
       extendBody: true, // ✅ transparency behind navbar
       body: _pages[_currentIndex],
 
-      bottomNavigationBar: SafeArea(
-        child: Container(
-          height: 63,
-          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          padding: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(40),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.25),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              )
-            ],
-          ),
-          child: Row(
-            children: [
-              _navItem(Icons.home, "Home", 0),
-              _navItem(Icons.checklist, "Attendance", 1),
-              _navItem(Icons.bar_chart, "Marklist", 2),
-              _navItem(Icons.person, "Profile", 3),
-            ],
-          ),
-        ),
-      ),
+      // --- In your build method ---
+bottomNavigationBar: SafeArea(
+  child: Container(
+    // height: 63, <-- REMOVE THIS to stop the overflow
+    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8), // Padding defines height now
+    decoration: BoxDecoration(
+      color: Theme.of(context).colorScheme.surfaceContainer,
+      borderRadius: BorderRadius.circular(40), // Main bar arc
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.2),
+          blurRadius: 15,
+          offset: const Offset(0, 5),
+        )
+      ],
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        _navItem(Icons.home, "Home", 0),
+        _navItem(Icons.checklist, "Attendance", 1),
+        _navItem(Icons.bar_chart, "Marklist", 2),
+        _navItem(Icons.person, "Profile", 3),
+      ],
+    ),
+  ),
+),
     );
   }
 
   Widget _navItem(IconData icon, String label, int index) {
-    bool isSelected = _currentIndex == index;
+  bool isSelected = _currentIndex == index;
 
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => _onTabTapped(index),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          margin: const EdgeInsets.symmetric(horizontal: 2),
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? Theme.of(context).colorScheme.secondary.withOpacity(0.25)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(32),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                color: isSelected ? Colors.green : Colors.grey,
-                size: 20,
-              ),
-              const SizedBox(height: 3),
-              Text(
-                label,
-                style: TextStyle(
-                  color: isSelected ? Colors.green : Colors.grey,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
+  return Expanded(
+    child: GestureDetector(
+      onTap: () => _onTabTapped(index),
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        // Vertical padding here creates the "pill" height
+        padding: const EdgeInsets.symmetric(vertical: 10), 
+        decoration: BoxDecoration(
+          color: isSelected
+              ? Theme.of(context).colorScheme.secondary.withOpacity(0.15)
+              : Colors.transparent,
+          // Use 100 to perfectly match the outer bar's roundness
+          borderRadius: BorderRadius.circular(100), 
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? Colors.green : Colors.grey,
+              size: 22,
+            ),
+            if(true) //if (isSelected) Optional: Only show text for selected item to save space
+              Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ],
-          ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
