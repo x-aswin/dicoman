@@ -12,143 +12,115 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   int selectedTab = 0;
-
   final List<String> tabs = ["Basic", "Parents", "Contact", "Education"];
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // 🔹 Header Section
-            Container(
-              height: size.height * 0.32,
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF1E4F8A), Color(0xFF2E6FB7)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(25),
-                  bottomRight: Radius.circular(25),
-                ),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: NetworkImage(widget.student.profileImageUrl),
-                    backgroundColor:  Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    widget.student.name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    widget.student.regNo,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
-                  ),
-                   const SizedBox(height: 4),
-                  Text(
-                    widget.student.regNo,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 8),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      "Semester ${widget.student.currentSem}",
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  )
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            // 🔹 Tabs Section
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: List.generate(tabs.length, (index) {
-                  final isSelected = selectedTab == index;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedTab = index;
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: isSelected ? Colors.blue : Colors.transparent,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        tabs[index],
-                        style: TextStyle(
-                          color: isSelected ? Theme.of(context).colorScheme.primary.withOpacity(0.5) : Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            // 🔹 Content Card (Basic Info Example)
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
+      backgroundColor: colorScheme.surface,
+      body: CustomScrollView(
+        slivers: [
+          // 🔹 M3 Styled Sliver App Bar
+          SliverAppBar(
+            expandedHeight: 280,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    )
+                  color: colorScheme.primaryContainer,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(32),
+                    bottomRight: Radius.circular(32),
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 40),
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: colorScheme.primary,
+                      child: CircleAvatar(
+                        radius: 47,
+                        backgroundImage: NetworkImage(widget.student.profileImageUrl),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      widget.student.name,
+                      style: TextStyle(
+                        color: colorScheme.onPrimaryContainer,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      widget.student.regNo,
+                      style: TextStyle(
+                        color: colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Badge(
+                      label: Text("Semester ${widget.student.currentSem}"),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      largeSize: 24,
+                      backgroundColor: colorScheme.primary,
+                      textColor: colorScheme.onPrimary,
+                    ),
                   ],
                 ),
-                child: _buildTabContent(),
               ),
             ),
-          ],
-        ),
+          ),
+
+          // 🔹 M3 Segmented Tabs
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SegmentedButton<int>(
+                  segments: List.generate(tabs.length, (index) {
+                    return ButtonSegment<int>(
+                      value: index,
+                      label: Text(tabs[index]),
+                    );
+                  }),
+                  selected: {selectedTab},
+                  onSelectionChanged: (newSelection) {
+                    setState(() {
+                      selectedTab = newSelection.first;
+                    });
+                  },
+                  showSelectedIcon: false,
+                ),
+              ),
+            ),
+          ),
+
+          // 🔹 Content Section
+          SliverPadding(
+            padding: const EdgeInsets.all(16),
+            sliver: SliverToBoxAdapter(
+              child: Card(
+                elevation: 0,
+                color: colorScheme.surfaceContainerLow,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  side: BorderSide(color: colorScheme.outlineVariant.withValues(alpha: 0.5)),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: _buildTabContent(),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -158,11 +130,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       case 0:
         return _basicInfo();
       case 1:
-        return const Text("Parents Info (Coming Soon)");
+        return _placeholderInfo("Parents Info", Icons.family_restroom);
       case 2:
-        return const Text("Contact Info (Coming Soon)");
+        return _placeholderInfo("Contact Info", Icons.contact_phone);
       case 3:
-        return const Text("Education Info (Coming Soon)");
+        return _placeholderInfo("Education Info", Icons.history_edu);
       default:
         return const SizedBox();
     }
@@ -172,39 +144,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           "Basic Details",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 18, 
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.primary,
+          ),
         ),
-        const SizedBox(height: 12),
-        _infoRow(Icons.person, "Name", widget.student.name),
-        _infoRow(Icons.confirmation_number, "Register No", widget.student.regNo),
-        _infoRow(Icons.school, "Batch ID", widget.student.batchId.toString()),
-        _infoRow(Icons.timeline, "Current Semester",
-            widget.student.currentSem.toString()),
+        const SizedBox(height: 16),
+        _infoTile(Icons.person_outline, "Full Name", widget.student.name),
+        _infoTile(Icons.badge_outlined, "Registration Number", widget.student.regNo),
+        _infoTile(Icons.groups_outlined, "Batch Reference", widget.student.batchId.toString()),
+        _infoTile(Icons.school_outlined, "Academic Stage", "Semester ${widget.student.currentSem}"),
       ],
     );
   }
 
-  Widget _infoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.blue, size: 20),
-          const SizedBox(width: 10),
-          Text(
-            "$label: ",
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(color: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5)),
-            ),
-          ),
-        ],
+  Widget _infoTile(IconData icon, String label, String value) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: colorScheme.primary.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, color: colorScheme.primary, size: 20),
       ),
+      title: Text(
+        label,
+        style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant),
+      ),
+      subtitle: Text(
+        value,
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+
+  Widget _placeholderInfo(String title, IconData icon) {
+    return Column(
+      children: [
+        Icon(icon, size: 48, color: Theme.of(context).colorScheme.outline),
+        const SizedBox(height: 12),
+        Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        const Text("Information will be fetched from DiCoMan servers."),
+      ],
     );
   }
 }
