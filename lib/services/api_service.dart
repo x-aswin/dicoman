@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/student.dart';
+import '../models/notification.dart';
 
 class ApiService {
   final String baseUrl = "https://dicoman.dist.ac.in/api";
@@ -32,4 +33,26 @@ class ApiService {
     
     return null;
   }
+
+
+
+  Future<List<AppNotification>> fetchNotifications() async {
+  await Future.delayed(const Duration(seconds: 2)); // Simulating network delay
+
+  // Mock JSON data from server
+  const String mockJson = '''
+  [
+    {"id": 1, "title": "Exam Results", "description": "Semester 7 results are out.", "time": "10:00 AM"},
+    {"id": 2, "title": "Sura our Hero!", "description": "Soora is the best person in the world.", "time": "06:30 PM"},
+    {"id": 3, "title": "Holiday Notice", "description": "Tomorrow is a holiday due to rain.", "time": "02:30 PM"},
+    {"id": 4, "title": "Seminar", "description": "AI Seminar in the main hall at 11 AM.", "time": "Yesterday"}
+  ]
+  ''';
+
+  final List<dynamic> data = jsonDecode(mockJson);
+  return data.map((json) => AppNotification.fromJson(json)).toList();
+}
+
+
+
 }

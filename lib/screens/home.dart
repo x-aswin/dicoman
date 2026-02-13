@@ -6,6 +6,7 @@ import 'attendance.dart';
 import 'marklist.dart';
 import 'profile.dart';
 import '../controllers/profile_controller.dart';
+import '../controllers/notification.dart';
 
 class MainNavigation extends StatefulWidget {
   final Student student;
@@ -23,6 +24,7 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   void initState() {
     super.initState();
+    NotificationController().fetchAllNotifications();
     currentStudent = widget.student;
 
     _pages = [
