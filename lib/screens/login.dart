@@ -19,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   //The function to trigger login
   void _handleLogin() async {
+    FocusScope.of(context).unfocus();
     final success = await _authController.login(
       _usernameController.text,
       _passwordController.text,
